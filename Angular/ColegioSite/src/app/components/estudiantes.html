@@ -1,0 +1,278 @@
+<div class="contenedor-principal">
+  <!-- Header -->
+  <div class="header">
+    <h1>Gestión de Estudiantes</h1>
+    <p class="subtitulo">Administra el registro de estudiantes por curso y paralelo</p>
+  </div>
+
+  <!-- Mensajes de estado -->
+  <div *ngIf="error() || exito()" class="mensajes">
+    <div *ngIf="error()" class="alerta error" (click)="limpiarMensaje()">
+      <span>{{ error() }}</span>
+    </div>
+    <div *ngIf="exito()" class="alerta exito" (click)="limpiarMensaje()">
+      <span>{{ exito() }}</span>
+    </div>
+  </div>
+
+  <!-- Filtros -->
+  <div class="seccion filtros">
+    <h2>Filtrar Estudiantes</h2>
+    <form [formGroup]="formularioFiltro" class="formulario-filtro">
+      <div class="grupo-filtro">
+        <label for="cursoFiltro">Curso:</label>
+        <select id="cursoFiltro" formControlName="idCurso" class="input">
+          <option value="">-- Seleccionar curso --</option>
+          <option *ngFor="let curso of cursos()" [value]="curso.idCurso">
+            {{ curso.nombreCurso }}
+          </option>
+        </select>
+      </div>
+
+      <div class="grupo-filtro">
+        <label for="paraleloFiltro">Paralelo:</label>
+        <select id="paraleloFiltro" formControlName="idParalelo" class="input" [disabled]="!formularioFiltro.get('idCurso')?.value">
+          <option value="">-- Seleccionar paralelo --</option>
+          <option *ngFor="let paralelo of paralelos()" [value]="paralelo.idParalelo">
+            {{ paralelo.nombreParalelo }}
+          </option>
+        </select>
+      </div>
+
+      <button type="button" (click)="aplicarFiltros()" class="boton boton-primario">
+        Aplicar Filtros
+      </button>
+      <button type="button" (click)="formularioFiltro.reset(); aplicarFiltros()" class="boton boton-secundario">
+        Limpiar
+      </button>
+    </form>
+  </div>
+
+  <!-- Botón Crear Estudiante -->
+  <div class="seccion acciones">
+    <button (click)="abrirFormulario()" class="boton boton-crear" [disabled]="cargando()">
+      + Nuevo Estudiante
+    </button>
+  </div>
+
+  <!-- Formulario Crear/Editar -->
+  <div *ngIf="mostrarFormulario()" class="modal-overlay" (click)="cancelarFormulario()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>{{ modoEdicion() ? 'Editar Notas' : 'Crear Nuevo Estudiante' }}</h2>
+        <button type="button" (click)="cancelarFormulario()" class="boton-cerrar">✕</button>
+      </div>
+
+      <form [formGroup]="formularioEstudiante" class="formulario" (ngSubmit)="modoEdicion() ? actualizarEstudiante() : guardarEstudiante()">
+        
+        <!-- Campos de creación (solo en modo crear) -->
+        <div *ngIf="!modoEdicion()" class="grupo-formulario">
+          <label for="nombre">Nombre del Estudiante *</label>
+          <input 
+            id="nombre" 
+            type="text" 
+            formControlName="nombre" 
+            class="input"
+            placeholder="Ingresa el nombre completo"
+          />
+          <small *ngIf="formularioEstudiante.get('nombre')?.hasError('required')" class="error-msg">
+            El nombre es requerido
+          </small>
+          <small *ngIf="formularioEstudiante.get('nombre')?.hasError('maxlength')" class="error-msg">
+            Máximo 100 caracteres
+          </small>
+        </div>
+
+        <div *ngIf="!modoEdicion()" class="grupo-formulario">
+          <label for="cursoFormulario">Curso *</label>
+          <select id="cursoFormulario" formControlName="idCurso" class="input">
+            <option value="">-- Seleccionar curso --</option>
+            <option *ngFor="let curso of cursos()" [value]="curso.idCurso">
+              {{ curso.nombreCurso }}
+            </option>
+          </select>
+          <small *ngIf="formularioEstudiante.get('idCurso')?.hasError('required')" class="error-msg">
+            El curso es requerido
+          </small>
+        </div>
+
+        <div *ngIf="!modoEdicion()" class="grupo-formulario">
+          <label for="paraleloFormulario">Paralelo *</label>
+          <select id="paraleloFormulario" formControlName="idParalelo" class="input" [disabled]="!formularioEstudiante.get('idCurso')?.value">
+            <option value="">-- Seleccionar paralelo --</option>
+            <option *ngFor="let paralelo of paralelos()" [value]="paralelo.idParalelo">
+              {{ paralelo.nombreParalelo }}
+            </option>
+          </select>
+          <small *ngIf="formularioEstudiante.get('idParalelo')?.hasError('required')" class="error-msg">
+            El paralelo es requerido
+          </small>
+        </div>
+
+        <!-- Notas (en ambos modos) -->
+        <div class="grupo-notas">
+          <div class="grupo-formulario">
+            <label for="nota1">Nota 1 (0-10) *</label>
+            <input 
+              id="nota1" 
+              type="number" 
+              formControlName="nota1" 
+              class="input"
+              min="0" 
+              max="10" 
+              step="0.01"
+            />
+            <small *ngIf="formularioEstudiante.get('nota1')?.hasError('required')" class="error-msg">
+              Requerido
+            </small>
+            <small *ngIf="formularioEstudiante.get('nota1')?.hasError('min') || formularioEstudiante.get('nota1')?.hasError('max')" class="error-msg">
+              Debe estar entre 0 y 10
+            </small>
+          </div>
+
+          <div class="grupo-formulario">
+            <label for="nota2">Nota 2 (0-10) *</label>
+            <input 
+              id="nota2" 
+              type="number" 
+              formControlName="nota2" 
+              class="input"
+              min="0" 
+              max="10" 
+              step="0.01"
+            />
+            <small *ngIf="formularioEstudiante.get('nota2')?.hasError('required')" class="error-msg">
+              Requerido
+            </small>
+            <small *ngIf="formularioEstudiante.get('nota2')?.hasError('min') || formularioEstudiante.get('nota2')?.hasError('max')" class="error-msg">
+              Debe estar entre 0 y 10
+            </small>
+          </div>
+
+          <div class="grupo-formulario">
+            <label for="nota3">Nota 3 (0-10) *</label>
+            <input 
+              id="nota3" 
+              type="number" 
+              formControlName="nota3" 
+              class="input"
+              min="0" 
+              max="10" 
+              step="0.01"
+            />
+            <small *ngIf="formularioEstudiante.get('nota3')?.hasError('required')" class="error-msg">
+              Requerido
+            </small>
+            <small *ngIf="formularioEstudiante.get('nota3')?.hasError('min') || formularioEstudiante.get('nota3')?.hasError('max')" class="error-msg">
+              Debe estar entre 0 y 10
+            </small>
+          </div>
+        </div>
+
+        <div class="modal-acciones">
+          <button type="submit" class="boton boton-primario" [disabled]="cargando()">
+            {{ cargando() ? 'Guardando...' : (modoEdicion() ? 'Actualizar' : 'Crear') }}
+          </button>
+          <button type="button" (click)="cancelarFormulario()" class="boton boton-secundario" [disabled]="cargando()">
+            Cancelar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Tabla de Estudiantes -->
+  <div class="seccion tabla-seccion">
+    <h2>Listado de Estudiantes ({{ estudiantesFiltrados().length }} registros)</h2>
+    
+    <div *ngIf="cargando()" class="cargando">
+      Cargando datos...
+    </div>
+
+    <div *ngIf="!cargando() && estudiantesFiltrados().length === 0" class="sin-datos">
+      No hay estudiantes registrados con los filtros seleccionados.
+    </div>
+
+    <div *ngIf="!cargando() && estudiantesFiltrados().length > 0" class="tabla-contenedor">
+      <table class="tabla">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Curso</th>
+            <th>Paralelo</th>
+            <th>Nota 1</th>
+            <th>Nota 2</th>
+            <th>Nota 3</th>
+            <th>Promedio</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let estudiante of estudiantesPaginados" class="fila">
+            <td>{{ estudiante.nombre }}</td>
+            <td>{{ estudiante.nombreCurso }}</td>
+            <td>{{ estudiante.nombreParalelo }}</td>
+            <td>{{ estudiante.nota1 | number:'1.2-2' }}</td>
+            <td>{{ estudiante.nota2 | number:'1.2-2' }}</td>
+            <td>{{ estudiante.nota3 | number:'1.2-2' }}</td>
+            <td class="promedio-cell">
+              <span class="promedio" [ngClass]="estudiante.promedio >= 7 ? 'aprobado' : 'reprobado'">
+                {{ estudiante.promedio | number:'1.2-2' }}
+              </span>
+            </td>
+            <td>
+              <span class="estado" [ngClass]="estudiante.estado.toLowerCase()">
+                {{ estudiante.estado }}
+              </span>
+            </td>
+            <td class="acciones-cell">
+              <button (click)="editarEstudiante(estudiante)" class="boton boton-editar" title="Editar">
+                ✎
+              </button>
+              <button (click)="abrirDialogoEliminar(estudiante)" class="boton boton-eliminar" title="Eliminar">
+                🗑
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Paginación -->
+      <div *ngIf="totalPaginas > 1" class="paginacion">
+        <button 
+          (click)="irAPagina(paginaActual() - 1)" 
+          [disabled]="paginaActual() === 1"
+          class="boton-pagina"
+        >
+          ← Anterior
+        </button>
+
+        <div class="numeros-paginas">
+          <button 
+            *ngFor="let pagina of paginasArray" 
+            (click)="irAPagina(pagina)"
+            [class.activa]="pagina === paginaActual()"
+            class="numero-pagina"
+          >
+            {{ pagina }}
+          </button>
+        </div>
+
+        <button 
+          (click)="irAPagina(paginaActual() + 1)" 
+          [disabled]="paginaActual() === totalPaginas"
+          class="boton-pagina"
+        >
+          Siguiente →
+        </button>
+      </div>
+
+      <div class="info-paginacion">
+        Mostrando {{ (paginaActual() - 1) * itemsPorPagina() + 1 }} a 
+        {{ estudiantesFinalPagina }} 
+        de {{ estudiantesFiltrados().length }} estudiantes
+      </div>
+    </div>
+  </div>
+</div>
