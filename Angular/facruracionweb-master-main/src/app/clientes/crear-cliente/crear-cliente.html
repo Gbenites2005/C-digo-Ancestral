@@ -1,0 +1,41 @@
+<section class="crear-contenedor">
+  <h2>Crear Nuevo Cliente</h2>
+
+  <form [formGroup]="clienteForm" (ngSubmit)="guardar()" class="formulario-cliente">
+    <div class="campo">
+      <input type="text" formControlName="nombres" placeholder="Nombre" />
+    </div>
+
+    <div class="campo">
+      <input type="text" formControlName="apellidos" placeholder="Apellido" />
+    </div>
+
+    <div class="campo">
+      <input type="text" formControlName="cedula" placeholder="Cédula" />
+    </div>
+
+    <div class="campo">
+      <input type="email" formControlName="email" placeholder="Email" />
+    </div>
+
+    <div class="campo">
+      <input type="tel" formControlName="telefono" placeholder="Teléfono" />
+    </div>
+
+    <div class="campo">
+      <input type="text" formControlName="direccion" placeholder="Dirección" />
+    </div>
+
+    <div class="campo checkbox">
+      <label>
+        <input type="checkbox" formControlName="esConsumidorFinal" />
+        Es Consumidor Final
+      </label>
+    </div>
+
+    <div class="acciones-form">
+      <button type="submit" class="btn-aceptar" [disabled]="clienteForm.invalid">Crear Cliente</button>
+      <a class="btn-cancelar" routerLink="/listarClientes">Cancelar</a>
+    </div>
+  </form>
+</section>

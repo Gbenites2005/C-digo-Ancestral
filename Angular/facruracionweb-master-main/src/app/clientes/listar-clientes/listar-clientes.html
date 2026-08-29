@@ -1,0 +1,54 @@
+<section class="clientes">
+  <h1>Listado de Clientes</h1>
+  <button matButton="filled" (click)="crearCliente()" class="crear-cliente">Crear Cliente</button>
+
+  <div class="tabla-contenedor">
+    <table mat-table [dataSource]="dataSource">
+      <ng-container matColumnDef="nombres">
+        <th mat-header-cell *matHeaderCellDef>Nombre</th>
+        <td mat-cell *matCellDef="let element">{{ element.nombres }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="apellidos">
+        <th mat-header-cell *matHeaderCellDef>Apellido</th>
+        <td mat-cell *matCellDef="let element">{{ element.apellidos }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="cedula">
+        <th mat-header-cell *matHeaderCellDef>Cédula</th>
+        <td mat-cell *matCellDef="let element">{{ element.cedula }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef>Email</th>
+        <td mat-cell *matCellDef="let element">{{ element.email }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="telefono">
+        <th mat-header-cell *matHeaderCellDef>Teléfono</th>
+        <td mat-cell *matCellDef="let element">{{ element.telefono }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="direccion">
+        <th mat-header-cell *matHeaderCellDef>Dirección</th>
+        <td mat-cell *matCellDef="let element">{{ element.direccion }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="clienteId">
+        <th mat-header-cell *matHeaderCellDef>Id</th>
+        <td mat-cell *matCellDef="let element">{{ element.clienteId }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="acciones">
+        <th mat-header-cell *matHeaderCellDef>Acciones</th>
+        <td mat-cell *matCellDef="let element" class="acciones">
+          <button matButton="filled" type="button" class="editar" [routerLink]="['/editarCliente', element.clienteId]">Editar</button>
+          <button matButton="filled" type="button" class="eliminar" (click)="eliminarCliente(element)">Eliminar</button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </div>
+</section>
