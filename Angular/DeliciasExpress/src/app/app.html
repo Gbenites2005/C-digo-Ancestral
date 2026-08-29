@@ -1,0 +1,199 @@
+@if (selectedDish) {
+  <div class="recipe-page">
+    <div class="recipe-shell">
+      <button class="back-button" type="button" (click)="closeDish()">← Volver al menú</button>
+
+      <div class="recipe-hero">
+        <img [src]="selectedDish.image" [alt]="selectedDish.name" />
+
+        <div class="recipe-summary">
+          <span class="dish-tag">{{ selectedDish.tag }}</span>
+          <h1>{{ selectedDish.name }}</h1>
+          <p>{{ selectedDish.description }}</p>
+
+          <div class="recipe-meta">
+            <span>{{ selectedDish.price }}</span>
+            <span>{{ selectedDish.time }}</span>
+            <span>{{ selectedDish.difficulty }}</span>
+            <span>{{ selectedDish.servings }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="recipe-content">
+        <section class="recipe-section">
+          <h2>Ingredientes</h2>
+          <ul class="ingredient-list">
+            @for (ingredient of selectedDish.ingredients; track ingredient) {
+              <li>{{ ingredient }}</li>
+            }
+          </ul>
+        </section>
+
+        <section class="recipe-section">
+          <h2>Preparación</h2>
+          <ol class="steps-list">
+            @for (step of selectedDish.steps; track step) {
+              <li>{{ step }}</li>
+            }
+          </ol>
+        </section>
+      </div>
+    </div>
+  </div>
+} @else {
+  <div class="page-shell">
+    <header class="topbar">
+      <div class="brand-wrap">
+        <div class="brand-mark">DE</div>
+        <div>
+          <span class="brand-name">DeliciasExpress</span>
+          <small>Sabores que te llevan más lejos</small>
+        </div>
+      </div>
+
+      <nav class="main-nav" aria-label="Navegación principal">
+        <a href="#inicio">Inicio</a>
+        <a href="#menu">Menú</a>
+        <a href="#sobre-nosotros">Nosotros</a>
+        <a href="#contacto">Contacto</a>
+      </nav>
+
+      <a class="cta-button" href="#menu">Reservar ahora</a>
+    </header>
+
+    <main>
+      <section id="inicio" class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">La cocina que enamora</p>
+          <h1>Delicias hechas para compartir, disfrutar y volver por más.</h1>
+          <p class="lead">
+            Desde cangrejo y asados hasta sushi, chaulafán, salchipapa, hamburguesa, encebollado,
+            bolón, tigrillo y choclisa: aquí cada bocado tiene historia, color y sabor.
+          </p>
+
+          <div class="hero-actions">
+            <a class="cta-button" href="#menu">Ver menú</a>
+            <a class="secondary-button" href="#contacto">Contactar</a>
+          </div>
+
+          <div class="stats-grid" aria-label="Estadísticas del restaurante">
+            @for (stat of stats; track stat.label) {
+              <div class="stat-box">
+                <strong>{{ stat.value }}</strong>
+                <span>{{ stat.label }}</span>
+              </div>
+            }
+          </div>
+        </div>
+
+        <div class="hero-visual" aria-label="Platos destacados de DeliciasExpress">
+          <div class="image-card large-card">
+            <img src="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=900&q=80" alt="Plato de asado con carne" />
+          </div>
+          <div class="image-card small-card upper-card">
+            <img src="https://images.unsplash.com/photo-1579871494447-9811cf80d66c?auto=format&fit=crop&w=900&q=80" alt="Sushi servido" />
+          </div>
+          <div class="image-card small-card lower-card">
+            <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=900&q=80" alt="Hamburguesa gourmet" />
+          </div>
+        </div>
+      </section>
+
+      <section class="categories-section" aria-label="Tipos de comida">
+        <div class="section-heading">
+          <p class="eyebrow">Nuestra variedad</p>
+          <h2>De todo un poco, con sazón y pasión.</h2>
+        </div>
+
+        <div class="chip-list">
+          @for (category of categories; track category) {
+            <span class="chip">{{ category }}</span>
+          }
+        </div>
+      </section>
+
+      <section id="menu" class="menu-section">
+        <div class="section-heading">
+          <p class="eyebrow">Platos estrella</p>
+          <h2>Menú irresistible para toda ocasión.</h2>
+        </div>
+
+        <div class="dish-grid">
+          @for (dish of dishes; track dish.name) {
+            <article class="dish-card" (click)="openDish(dish)" tabindex="0" role="button" (keydown.enter)="openDish(dish)" (keydown.space)="openDish(dish)">
+              <div class="dish-image-wrap">
+                <img [src]="dish.image" [alt]="dish.name" />
+                <span class="dish-tag">{{ dish.tag }}</span>
+              </div>
+              <div class="dish-body">
+                <div class="dish-header">
+                  <h3>{{ dish.name }}</h3>
+                  <span>{{ dish.price }}</span>
+                </div>
+                <p>{{ dish.description }}</p>
+              </div>
+            </article>
+          }
+        </div>
+      </section>
+
+      <section id="sobre-nosotros" class="about-section">
+        <div class="about-media">
+          <img src="https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&w=900&q=80" alt="Chef preparando comida en el restaurante" />
+        </div>
+
+        <div class="about-copy">
+          <p class="eyebrow">¿Por qué elegirnos?</p>
+          <h2>Una experiencia culinaria que combina tradición, creatividad y atmósfera.</h2>
+
+          <div class="feature-list">
+            @for (item of highlights; track item.title) {
+              <div class="feature-item">
+                <div class="feature-icon">✓</div>
+                <div>
+                  <h3>{{ item.title }}</h3>
+                  <p>{{ item.text }}</p>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      </section>
+
+      <section class="cta-banner">
+        <div>
+          <p class="eyebrow">Reserva ahora</p>
+          <h2>Haz de cada comida un momento especial.</h2>
+        </div>
+        <a class="cta-button" href="#contacto">Llamar o agendar</a>
+      </section>
+    </main>
+
+    <footer id="contacto" class="footer">
+      <div class="footer-brand">
+        <div class="brand-mark">DE</div>
+        <div>
+          <span class="brand-name">DeliciasExpress</span>
+          <small>Restaurante • Delivery • Sabor de hogar</small>
+        </div>
+      </div>
+
+      <div class="footer-info">
+        <div>
+          <h3>Horario</h3>
+          <p>Lun - Dom: 11:00 AM - 11:00 PM</p>
+        </div>
+        <div>
+          <h3>Contacto</h3>
+          <p>+593 99 123 4567</p>
+          <p>deliciasexpress@gmail.com</p>
+        </div>
+        <div>
+          <h3>Ubicación</h3>
+          <p>Av. Principal 245, centro urbano</p>
+        </div>
+      </div>
+    </footer>
+  </div>
+}
